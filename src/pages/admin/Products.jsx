@@ -24,11 +24,12 @@ function ProductForm({ product, onClose }) {
   const handleImage = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setError('')
     try {
       const image = await compressImage(file)
       setForm((f) => ({ ...f, image }))
-    } catch {
-      setError('No se pudo procesar la imagen. Intenta con otra foto.')
+    } catch (err) {
+      setError(err.message || 'No se pudo procesar la imagen. Intenta con otra foto.')
     }
   }
 
@@ -52,7 +53,13 @@ function ProductForm({ product, onClose }) {
       onClose()
     } catch (err) {
       console.error('Error guardando producto:', err)
-      setError('No se pudo guardar el producto.')
+      if (err.code === 'permission-denied') {
+        setError('Tu cuenta no tiene permisos para guardar. Revisa que las reglas de Firestore estén publicadas.')
+      } else if (String(err.message).includes('longer than')) {
+        setError('La foto es demasiado pesada para guardarse. Sube una imagen más ligera.')
+      } else {
+        setError(`No se pudo guardar el producto. (${err.message})`)
+      }
       setSaving(false)
     }
   }

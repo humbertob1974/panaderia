@@ -31,8 +31,8 @@ export default function Settings() {
     try {
       const logo = await compressImage(file, { maxSize: 300 })
       set('logo', logo)
-    } catch {
-      setMessage('No se pudo procesar el logo.')
+    } catch (err) {
+      setMessage(err.message || 'No se pudo procesar el logo.')
     }
   }
 

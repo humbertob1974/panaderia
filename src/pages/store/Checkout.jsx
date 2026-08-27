@@ -56,6 +56,7 @@ export default function Checkout() {
         deliveryFee,
         total: grandTotal,
         status: 'nuevo',
+        paymentMethod: 'pendiente',
         createdAt: serverTimestamp(),
       }
       const ref = await addDoc(collection(db, 'orders'), order)

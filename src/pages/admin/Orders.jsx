@@ -13,11 +13,22 @@ const STATUSES = [
 
 const statusInfo = (value) => STATUSES.find((s) => s.value === value) ?? STATUSES[0]
 
+const PAYMENTS = [
+  { value: 'pendiente', label: 'Pago pendiente', short: 'Pendiente', icon: '⏳', color: 'bg-orange-100 text-orange-800' },
+  { value: 'efectivo', label: 'Efectivo', short: 'Efectivo', icon: '💵', color: 'bg-green-100 text-green-800' },
+  { value: 'cheque', label: 'Cheque', short: 'Cheque', icon: '🏦', color: 'bg-green-100 text-green-800' },
+  { value: 'electronico', label: 'Pago electrónico', short: 'Electrónico', icon: '📱', color: 'bg-green-100 text-green-800' },
+]
+
+const paymentInfo = (value) => PAYMENTS.find((p) => p.value === value) ?? PAYMENTS[0]
+
 function OrderCard({ order }) {
   const [expanded, setExpanded] = useState(false)
   const info = statusInfo(order.status)
+  const payment = paymentInfo(order.paymentMethod)
 
   const setStatus = (status) => updateDoc(doc(db, 'orders', order.id), { status })
+  const setPayment = (paymentMethod) => updateDoc(doc(db, 'orders', order.id), { paymentMethod })
 
   const handleDelete = () => {
     if (confirm('¿Eliminar este pedido definitivamente?')) {
@@ -41,6 +52,9 @@ function OrderCard({ order }) {
           </p>
         </div>
         <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${info.color}`}>{info.label}</span>
+        <span className={`hidden shrink-0 rounded-full px-2.5 py-1 text-xs font-bold sm:inline ${payment.color}`} title={payment.label}>
+          {payment.icon} {payment.short}
+        </span>
         <span className="shrink-0 font-extrabold text-amber-900">{formatPrice(order.total)}</span>
         <span className="text-stone-400">{expanded ? '▲' : '▼'}</span>
       </button>
@@ -78,19 +92,35 @@ function OrderCard({ order }) {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 border-t border-stone-100 pt-3">
-            <label className="text-sm font-bold text-stone-600">Estado:</label>
-            <select
-              value={order.status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="field !w-auto !py-1.5 text-sm"
-            >
-              {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-stone-100 pt-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-bold text-stone-600">Estado:</label>
+              <select
+                value={order.status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="field !w-auto !py-1.5 text-sm"
+              >
+                {STATUSES.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-bold text-stone-600">Pago:</label>
+              <select
+                value={order.paymentMethod ?? 'pendiente'}
+                onChange={(e) => setPayment(e.target.value)}
+                className="field !w-auto !py-1.5 text-sm"
+              >
+                {PAYMENTS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.icon} {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button onClick={handleDelete} className="ml-auto text-sm text-red-600 hover:underline">
               Eliminar pedido
             </button>

@@ -51,6 +51,9 @@ function OrderCard({ order }) {
             <div>
               <p className="font-bold text-stone-600">Contacto</p>
               <p>📞 <a href={`tel:${order.customer?.phone}`} className="text-amber-800 hover:underline">{order.customer?.phone}</a></p>
+              {order.customer?.email && (
+                <p className="mt-1">✉️ <a href={`mailto:${order.customer.email}`} className="text-amber-800 hover:underline">{order.customer.email}</a></p>
+              )}
               <p className="mt-1">📍 {order.customer?.address}</p>
               {order.customer?.notes && <p className="mt-1 text-stone-500">📝 {order.customer.notes}</p>}
             </div>

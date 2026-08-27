@@ -5,6 +5,7 @@ import { db } from '../../firebase'
 import { useCart } from '../../context/CartContext'
 import { useSettings } from '../../context/SettingsContext'
 import { formatPrice } from '../../lib/format'
+import { sendOrderConfirmation } from '../../lib/email'
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart()
@@ -15,6 +16,7 @@ export default function Checkout() {
   const [form, setForm] = useState({
     name: '',
     phone: '',
+    email: '',
     address: '',
     notes: '',
   })
@@ -45,6 +47,7 @@ export default function Checkout() {
         customer: {
           name: form.name.trim(),
           phone: form.phone.trim(),
+          email: form.email.trim(),
           address: form.address.trim(),
           notes: form.notes.trim(),
         },
@@ -56,6 +59,10 @@ export default function Checkout() {
         createdAt: serverTimestamp(),
       }
       const ref = await addDoc(collection(db, 'orders'), order)
+      // El correo de confirmación no debe bloquear ni tirar el pedido si falla.
+      sendOrderConfirmation({ order, orderId: ref.id, settings }).catch((err) =>
+        console.error('No se pudo enviar el correo de confirmación:', err)
+      )
       clearCart()
       navigate(`/pedido/${ref.id}`, { state: { order: { ...order, id: ref.id } } })
     } catch (err) {
@@ -91,6 +98,23 @@ export default function Checkout() {
               className="field"
               autoComplete="tel"
               placeholder="Para confirmar tu pedido"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="mb-1 block text-sm font-bold text-stone-600">
+              Correo electrónico *
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={form.email}
+              onChange={handleChange}
+              className="field"
+              autoComplete="email"
+              inputMode="email"
+              placeholder="Te enviaremos la confirmación del pedido"
             />
           </div>
           <div>

@@ -16,6 +16,11 @@ export default function OrderSuccess() {
         Gracias por tu compra{order?.customer?.name ? `, ${order.customer.name}` : ''}. Te contactaremos
         pronto para confirmar la entrega.
       </p>
+      {order?.customer?.email && (
+        <p className="mt-2 text-sm text-stone-500">
+          Enviamos la confirmación a <strong>{order.customer.email}</strong>.
+        </p>
+      )}
       <p className="mt-3 rounded-xl bg-amber-100 px-4 py-2 text-sm text-amber-900">
         Número de pedido: <strong>{orderId.slice(0, 8).toUpperCase()}</strong>
       </p>

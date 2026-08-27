@@ -12,6 +12,11 @@ const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 export const isEmailConfigured = Boolean(SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY)
 
+// Los clientes de correo (Gmail, Outlook) bloquean imágenes incrustadas,
+// así que el logo se sirve desde la página publicada en GitHub Pages.
+// Si cambias el logo del negocio, reemplaza también public/email-logo.png.
+const LOGO_URL = 'https://humbertob1974.github.io/panaderia/email-logo.png'
+
 function escapeHtml(text) {
   return String(text ?? '')
     .replaceAll('&', '&amp;')
@@ -46,6 +51,7 @@ function buildOrderEmailHtml({ order, orderId, settings }) {
       <!-- Encabezado -->
       <tr>
         <td style="background-color:#78350f;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
+          <img src="${LOGO_URL}" alt="${escapeHtml(settings.name)}" width="110" style="display:block;margin:0 auto 14px;width:110px;max-width:110px;border-radius:16px;" />
           <p style="margin:0;font-size:26px;font-weight:bold;color:#fffbeb;letter-spacing:1px;">${escapeHtml(settings.name)}</p>
           ${settings.slogan ? `<p style="margin:6px 0 0;font-size:13px;color:#fcd9a8;">${escapeHtml(settings.slogan)}</p>` : ''}
         </td>

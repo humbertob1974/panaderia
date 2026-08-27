@@ -44,7 +44,7 @@ Abre http://localhost:5173 — la tienda pública está en `/`, el panel en `/ad
 Al colocar un pedido, el cliente recibe un correo de confirmación. Esto usa [EmailJS](https://www.emailjs.com) (gratis hasta 200 correos/mes):
 
 1. Crea una cuenta en emailjs.com y conecta tu correo (**Email Services → Add New Service** → Gmail u otro).
-2. Crea una plantilla (**Email Templates → Create New Template**) usando las variables `{{to_email}}` (campo "To Email"), `{{customer_name}}`, `{{order_id}}`, `{{items}}`, `{{subtotal}}`, `{{delivery_fee}}`, `{{total}}`, `{{address}}`, `{{business_name}}`, `{{business_phone}}`.
+2. Crea una plantilla (**Email Templates → Create New Template**): en el campo "To Email" pon `{{to_email}}`, en el asunto por ejemplo `{{business_name}} — Recibimos su pedido {{order_id}}`, y como cuerpo únicamente `{{{message_html}}}` (con tres llaves, usando el editor de código). El diseño del correo se genera desde la app en `src/lib/email.js`.
 3. Copia el **Service ID**, **Template ID** y **Public Key** (Account → General) en `.env.local` y en los secrets del repositorio de GitHub (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`).
 
 Si estas variables no están configuradas, los pedidos funcionan normalmente, solo no se envía el correo.

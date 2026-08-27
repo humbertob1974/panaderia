@@ -65,6 +65,15 @@ export default function Home() {
   return (
     <div>
       <section className="mb-6 rounded-2xl bg-gradient-to-br from-amber-800 to-amber-950 px-5 py-8 text-center text-amber-50 sm:py-10">
+        {settings.logo ? (
+          <img
+            src={settings.logo}
+            alt={`Logo de ${settings.name}`}
+            className="mx-auto mb-4 h-32 w-32 rounded-full object-cover shadow-lg ring-4 ring-amber-50/30 sm:h-40 sm:w-40"
+          />
+        ) : (
+          <p className="mb-3 text-6xl">🥖</p>
+        )}
         <h1 className="font-serif text-2xl font-bold sm:text-3xl">{settings.name}</h1>
         {settings.slogan && <p className="mt-2 text-amber-200">{settings.slogan}</p>}
         {settings.deliveryNote && (

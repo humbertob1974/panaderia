@@ -125,7 +125,7 @@ export default function Settings() {
               <input
                 type="number"
                 min="0"
-                step="0.50"
+                step="0.01"
                 inputMode="decimal"
                 value={form.deliveryFee}
                 onChange={(e) => set('deliveryFee', e.target.value)}

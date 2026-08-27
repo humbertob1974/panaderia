@@ -142,7 +142,7 @@ function ProductForm({ product, onClose }) {
               type="number"
               required
               min="0"
-              step="0.50"
+              step="0.01"
               inputMode="decimal"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}

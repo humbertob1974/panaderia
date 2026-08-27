@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Catálogo: cualquiera puede ver; solo usuarios con sesión pueden editar.
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if signedIn();
+    }
+
+    // Configuración del negocio: pública para mostrar la tienda.
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if signedIn();
+    }
+
+    // Pedidos: cualquiera puede crear (checkout público);
+    // solo el equipo puede verlos y administrarlos.
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if signedIn();
+    }
+
+    // Usuarios: cada quien puede crear/leer su propio registro;
+    // solo administradores gestionan al resto.
+    match /users/{userId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == userId;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

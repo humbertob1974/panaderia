@@ -15,7 +15,7 @@ export const isEmailConfigured = Boolean(SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY
 // Los clientes de correo (Gmail, Outlook) bloquean imágenes incrustadas,
 // así que el logo se sirve desde la página publicada en GitHub Pages.
 // Si cambias el logo del negocio, reemplaza también public/email-logo.png.
-const LOGO_URL = 'https://humbertob1974.github.io/panaderia/email-logo.png'
+const LOGO_URL = 'https://pompansat.com/email-logo.png'
 
 function escapeHtml(text) {
   return String(text ?? '')

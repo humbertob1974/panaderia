@@ -131,6 +131,71 @@ function OrderCard({ order }) {
   )
 }
 
+function Summary({ orders }) {
+  const [period, setPeriod] = useState('hoy')
+
+  const start = new Date()
+  if (period === 'hoy') {
+    start.setHours(0, 0, 0, 0)
+  } else if (period === 'semana') {
+    start.setDate(start.getDate() - 6)
+    start.setHours(0, 0, 0, 0)
+  } else {
+    start.setTime(0)
+  }
+
+  const relevant = orders.filter((o) => {
+    if (o.status === 'cancelado') return false
+    const date = o.createdAt?.toDate ? o.createdAt.toDate() : null
+    return date ? date >= start : period === 'todo'
+  })
+
+  const isPaid = (o) => o.paymentMethod && o.paymentMethod !== 'pendiente'
+  const cobrado = relevant.filter(isPaid).reduce((sum, o) => sum + (o.total ?? 0), 0)
+  const porCobrar = relevant.filter((o) => !isPaid(o)).reduce((sum, o) => sum + (o.total ?? 0), 0)
+
+  const periods = [
+    { value: 'hoy', label: 'Hoy' },
+    { value: 'semana', label: '7 días' },
+    { value: 'todo', label: 'Todo' },
+  ]
+
+  return (
+    <div className="card mb-4 p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">Resumen</h2>
+        <div className="flex gap-1 rounded-xl bg-stone-100 p-1">
+          {periods.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => setPeriod(p.value)}
+              className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
+                period === p.value ? 'bg-white text-amber-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-3 text-center">
+        <div className="rounded-xl bg-stone-50 px-2 py-3">
+          <p className="text-xl font-extrabold text-stone-700 sm:text-2xl">{relevant.length}</p>
+          <p className="text-xs font-bold text-stone-500">Pedidos</p>
+        </div>
+        <div className="rounded-xl bg-green-50 px-2 py-3">
+          <p className="text-xl font-extrabold text-green-700 sm:text-2xl">{formatPrice(cobrado)}</p>
+          <p className="text-xs font-bold text-green-700/70">Cobrado</p>
+        </div>
+        <div className="rounded-xl bg-orange-50 px-2 py-3">
+          <p className="text-xl font-extrabold text-orange-700 sm:text-2xl">{formatPrice(porCobrar)}</p>
+          <p className="text-xs font-bold text-orange-700/70">Por cobrar</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Orders() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -176,6 +241,8 @@ export default function Orders() {
           ))}
         </select>
       </div>
+
+      {!loading && <Summary orders={orders} />}
 
       {loading ? (
         <p className="animate-pulse py-10 text-center text-stone-500">Cargando pedidos…</p>
